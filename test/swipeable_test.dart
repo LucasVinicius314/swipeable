@@ -24,7 +24,7 @@ class TestApp extends StatefulWidget {
 }
 
 class _TestAppState extends State<TestApp> {
-  String _state;
+  late String _state;
 
   initState() {
     super.initState();
