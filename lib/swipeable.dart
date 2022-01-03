@@ -14,7 +14,7 @@ class Swipeable extends StatefulWidget {
   final VoidCallback? onSwipeEnd;
   final double threshold;
 
-  Swipeable({
+  const Swipeable({
     required this.child,
     required this.background,
     this.onSwipeStart,
@@ -23,8 +23,10 @@ class Swipeable extends StatefulWidget {
     this.onSwipeCancel,
     this.onSwipeEnd,
     this.threshold = 64.0,
-  });
+    Key? key,
+  }) : super(key: key);
 
+  @override
   State<StatefulWidget> createState() {
     return _SwipeableState();
   }
@@ -37,31 +39,33 @@ class _SwipeableState extends State<Swipeable> with TickerProviderStateMixin {
   bool _pastLeftThreshold = false;
   bool _pastRightThreshold = false;
 
+  @override
   void initState() {
     super.initState();
-    _moveController =
-        AnimationController(duration: Duration(milliseconds: 200), vsync: this);
-    _moveAnimation = Tween<Offset>(begin: Offset.zero, end: Offset(1.0, 0.0))
-        .animate(_moveController);
 
-    var controllerValue = 0.0;
+    _moveController = AnimationController(
+        duration: const Duration(milliseconds: 200), vsync: this);
+    _moveAnimation =
+        Tween<Offset>(begin: Offset.zero, end: const Offset(1.0, 0.0))
+            .animate(_moveController);
+
+    const controllerValue = 0.0;
     _moveController.animateTo(controllerValue);
   }
 
+  @override
   void dispose() {
     _moveController.dispose();
     super.dispose();
   }
 
   void _handleDragStart(DragStartDetails details) {
-    if (widget.onSwipeStart != null) {
-      widget.onSwipeStart!();
-    }
+    if (widget.onSwipeStart != null) widget.onSwipeStart!();
   }
 
   void _handleDragUpdate(DragUpdateDetails details) {
-    var delta = details.primaryDelta!;
-    var oldDragExtent = _dragExtent;
+    final delta = details.primaryDelta!;
+    final oldDragExtent = _dragExtent;
     _dragExtent += delta;
 
     if (oldDragExtent.sign != _dragExtent.sign) {
@@ -70,42 +74,36 @@ class _SwipeableState extends State<Swipeable> with TickerProviderStateMixin {
       });
     }
 
-    var movePastThresholdPixels = widget.threshold;
+    final movePastThresholdPixels = widget.threshold;
     var newPos = _dragExtent.abs() / context.size!.width;
 
     if (_dragExtent.abs() > movePastThresholdPixels) {
       // how many "thresholds" past the threshold we are. 1 = the threshold 2
       // = two thresholds.
-      var n = _dragExtent.abs() / movePastThresholdPixels;
+      final n = _dragExtent.abs() / movePastThresholdPixels;
 
       // Take the number of thresholds past the threshold, and reduce this
       // number
-      var reducedThreshold = math.pow(n, 0.3);
+      final reducedThreshold = math.pow(n, 0.3);
 
-      var adjustedPixelPos = movePastThresholdPixels * reducedThreshold;
+      final adjustedPixelPos = movePastThresholdPixels * reducedThreshold;
       newPos = adjustedPixelPos / context.size!.width;
 
       if (_dragExtent > 0 && !_pastLeftThreshold) {
         _pastLeftThreshold = true;
 
-        if (widget.onSwipeRight != null) {
-          widget.onSwipeRight!();
-        }
+        if (widget.onSwipeRight != null) widget.onSwipeRight!();
       }
       if (_dragExtent < 0 && !_pastRightThreshold) {
         _pastRightThreshold = true;
 
-        if (widget.onSwipeLeft != null) {
-          widget.onSwipeLeft!();
-        }
+        if (widget.onSwipeLeft != null) widget.onSwipeLeft!();
       }
     } else {
       // Send a cancel event if the user has swiped back underneath the
       // threshold
       if (_pastLeftThreshold || _pastRightThreshold) {
-        if (widget.onSwipeCancel != null) {
-          widget.onSwipeCancel!();
-        }
+        if (widget.onSwipeCancel != null) widget.onSwipeCancel!();
       }
       _pastLeftThreshold = false;
       _pastRightThreshold = false;
@@ -115,23 +113,22 @@ class _SwipeableState extends State<Swipeable> with TickerProviderStateMixin {
   }
 
   void _handleDragEnd(DragEndDetails details) {
-    _moveController.animateTo(0.0, duration: Duration(milliseconds: 200));
+    _moveController.animateTo(0.0, duration: const Duration(milliseconds: 200));
     _dragExtent = 0.0;
 
-    if (widget.onSwipeEnd != null) {
-      widget.onSwipeEnd!();
-    }
+    if (widget.onSwipeEnd != null) widget.onSwipeEnd!();
   }
 
   void _updateMoveAnimation() {
-    var end = _dragExtent.sign;
+    final end = _dragExtent.sign;
     _moveAnimation =
-        Tween<Offset>(begin: Offset(0.0, 0.0), end: Offset(end, 0.0))
+        Tween<Offset>(begin: const Offset(0.0, 0.0), end: Offset(end, 0.0))
             .animate(_moveController);
   }
 
+  @override
   Widget build(BuildContext context) {
-    var children = <Widget>[
+    final children = <Widget>[
       widget.background,
       SlideTransition(
         position: _moveAnimation,
@@ -144,9 +141,7 @@ class _SwipeableState extends State<Swipeable> with TickerProviderStateMixin {
       onHorizontalDragUpdate: _handleDragUpdate,
       onHorizontalDragEnd: _handleDragEnd,
       behavior: HitTestBehavior.opaque,
-      child: Stack(
-        children: children,
-      ),
+      child: Stack(children: children),
     );
   }
 }
