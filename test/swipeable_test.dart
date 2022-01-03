@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:swipeable/swipeable.dart';
+import 'package:swipeable_null_safety/swipeable.dart';
 
 void main() {
   testWidgets('swipeable', (tester) async {

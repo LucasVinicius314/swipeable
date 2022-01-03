@@ -14,7 +14,7 @@ dependencies:
 
   cupertino_icons: ^1.0.2
 
-  swipeable:
+  swipeable_null_safety:
     path: ../
 
 dev_dependencies:

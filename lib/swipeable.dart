@@ -1,4 +1,4 @@
-library swipeable;
+library swipeable_null_safety;
 
 import 'dart:math' as math;
 
