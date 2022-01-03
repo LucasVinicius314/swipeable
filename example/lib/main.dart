@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:swipeable_null_safety/swipeable.dart';
+import 'package:swipeable_null_safety/swipeable_null_safety.dart';
 
 void main() => runApp(const MyApp());
 
